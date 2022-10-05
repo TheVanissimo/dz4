@@ -1,0 +1,31 @@
+#include <iostream>
+#include <fstream>
+#include <string>;
+using namespace std;
+int main() {
+    setlocale(LC_ALL, "Rus");
+    ofstream fout;
+    string path = "myFile.txt";
+    fout.open(path);
+    cout << "Файл открыт" << endl;
+    cout << "Введите 10 чисел" << endl;
+    double vvod[10];
+    for (int i = 0; i < 10; i++) {
+        cin >> vvod[i];
+    }
+    for (int i = 0; i < 10; i++) {
+        fout << vvod[i] << endl;
+    }
+    fout.close();
+
+    ifstream fin;
+    fin.open(path);
+    double sum = 0, n;
+    for (int i = 0; i < 10; i++) {
+        double n;
+        fin >> n;
+        sum += n;
+    }
+    fin.close();
+    cout << "Сумма равна:" << sum << endl;
+}
