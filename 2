@@ -1,0 +1,23 @@
+#include <iostream>;
+#include <locale>;
+using namespace std;
+
+
+void sign(double x) {
+	if (x > 0) {
+		cout << 1 << endl;
+	}
+	else if (x == 0) {
+		cout << 0 << endl;
+	}
+	else if (x < 0) {
+		cout << -1 << endl;
+	}
+}
+int main() {
+	setlocale(LC_ALL, "Rus");
+	double n;
+	cout << "Введите число: " << endl;
+	cin >> n;
+	sign(n);
+}
