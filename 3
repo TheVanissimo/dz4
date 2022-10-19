@@ -1,0 +1,44 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+void treug() {
+	cout << "Введите стороны треугольника: " << endl;
+	double x, y, z;
+	cin >> x >> y >> z;
+	if ((x < y + z) && (y < x + z) && (z < x + y) && (x > 0) && (y > 0) && (z > 0)) {
+		double p = ((x + y + z) / 2);
+		cout << "Площадь треугольника равна " << sqrt(p * (p - x) * (p - y) * (p - z)) << endl;
+	}
+	else {
+		cout << "Треугольника не существует" << endl;
+	}
+}
+void pryam() {
+	cout << "Введите стороны прямоугольника:" << endl;
+	double a, b;
+	cin >> a >> b;
+	if (a > 0 && b > 0) {
+		cout << "Площадь прямоугольника равна: " << a * b << endl;
+	}
+	else {
+		cout << "Прямоугольника не существует" << endl;
+	}
+}
+void krug() {
+	cout << "Введите радиус круга: " << endl;
+	double pi = acos(-1.0), r = 0;
+	cin >> r;
+	if (r > 0) {
+		cout << "Площадь круга равна: " << pi * r * r << endl;
+	}
+	else {
+		cout << "Круга не существует" << endl;
+	}
+}
+int main() {
+	setlocale(LC_ALL, "Rus");
+	pryam();
+	treug();
+	krug();
+}
