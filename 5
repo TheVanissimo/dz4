@@ -1,34 +1,22 @@
-#define _WIN32_WINNT 0x0501
 #include <windows.h>
-#include <time.h>
-#include <wincon.h>
 #include <iostream>
 #include <iomanip>
-#include <math.h>
 using namespace std;
-BOOL Line(HDC hdc, int x1, int y1, int x2, int y2) {
-    MoveToEx(hdc, x1, y1, NULL);
-    return LineTo(hdc, x2, y2);
-}
+
 int main() {
-    int x = 400;
-    int y = 150;
-    srand(time(NULL));
     HWND hWnd = GetConsoleWindow();
     HDC hDc = GetDC(hWnd);
-    COLORREF color = RGB(0, 0, 0);
-    HPEN pen = CreatePen(PS_SOLID, 1, color);
-    SelectObject(hDc, pen);
-    for (int i = 0; i < 300; ++i)
-        Line(hDc, 200, i, 650, i);
-    color = RGB(255, 255, 255);
-    for (double x1 = 0; x1 < 350; x1 += 0.011)
-        SetPixel(hDc, 400, 10 + x1, color);
-    for (double x1 = 0; x1 < 400; x1 += 0.011)
-        SetPixel(hDc, 250 + x1, 150, color);
-    for (double x1 = -45; x1 < 42; x1 += 0.001) {
-        int y1 = sin(x1) * 50;
-        SetPixel(hDc, x1 * 5 + x + 63, y - y1, color);
+    COLORREF color = RGB(255, 255, 128);
+    for (double x1 = 10; x1 < 790; x1 += 1) {
+        SetPixel(hDc, x1, 150, color);
+    }
+    for (double y1 = 0; y1 < 290; y1 += 1) {
+        SetPixel(hDc, 400, y1, color);
+    }
+    color = RGB(255, 128, 128);
+    for (double x1 = -19; x1 < 19; x1 += 0.01){
+        int y1 = sin(x1) * 100;
+        SetPixel(hDc, x1 * 20 + 400, 150- y1, color);
     }
     return 0;
 }
