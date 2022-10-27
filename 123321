@@ -1,0 +1,157 @@
+#include <iostream>
+#include <cmath>
+#include <windows.h>
+#include <iomanip>
+
+using namespace std;
+
+
+void treug() {
+	cout << "Введите стороны треугольника: " << endl;
+	double x, y, z;
+	cin >> x >> y >> z;
+	if ((x < y + z) && (y < x + z) && (z < x + y) && (x > 0) && (y > 0) && (z > 0)) {
+		double p = ((x + y + z) / 2);
+		cout << "Площадь треугольника равна " << sqrt(p * (p - x) * (p - y) * (p - z)) << endl;
+	}
+	else {
+		cout << "Треугольника не существует" << endl;
+	}
+}
+void pryam() {
+	cout << "Введите стороны прямоугольника:" << endl;
+	double a, b;
+	cin >> a >> b;
+	if (a > 0 && b > 0) {
+		cout << "Площадь прямоугольника равна: " << a * b << endl;
+	}
+	else {
+		cout << "Прямоугольника не существует" << endl;
+	}
+}
+void krug() {
+	cout << "Введите радиус круга: " << endl;
+	double pi = acos(-1.0), r = 0;
+	cin >> r;
+	if (r > 0) {
+		cout << "Площадь круга равна: " << pi * r * r << endl;
+	}
+	else {
+		cout << "Круга не существует" << endl;
+	}
+}
+void sinus() {
+	for (int i = 0; i < 18; i++) {
+		cout << endl;
+	}
+	HWND hWnd = GetConsoleWindow();
+	HDC hDc = GetDC(hWnd);
+	COLORREF color = RGB(255, 255, 128);
+	for (double x1 = 10; x1 < 790; x1 += 1) {
+		SetPixel(hDc, x1, 150, color);
+	}
+	for (double y1 = 0; y1 < 290; y1 += 1) {
+		SetPixel(hDc, 400, y1, color);
+	}
+	color = RGB(255, 128, 128);
+	for (double x1 = -19; x1 < 19; x1 += 0.01) {
+		int y1 = sin(x1) * 100;
+		SetPixel(hDc, x1 * 20 + 400, 150 - y1, color);
+	}
+}
+
+void matrix() {
+	double a[3][4] = { {5,2,0,10},{3,5,2,5},{20,0,0,0} };
+	double b[4][2] = { {1.2,0.5},{2.8,0.4},{5,1},{2,1.5} };
+	double c[3][2];
+	double mint = 100000;
+	int minti = -1;
+	double maxt = 0;
+	int maxti = -1;
+	double minc = 100000;
+	int minci = -1;
+	double maxc = 0;
+	int maxci = -1;
+	double sumt = 0;
+	double sum = 0;
+	double sumc = 0;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 2; j++) {
+			double m = 0;
+			for (int k = 0; k < 4; k++) {
+				m += a[i][k] * b[k][j];
+			}
+			c[i][j] = m;
+		}
+	}
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 2; j++) {
+			sum += c[i][j];
+			if (j == 0) {
+				sumt += c[i][j];
+				if (c[i][j] > maxt) {
+					maxt = c[i][j];
+					maxti = i + 1;
+				}
+				if (c[i][j] < mint) {
+					mint = c[i][j];
+					minti = i + 1;
+				}
+			}
+
+			if (j == 1) {
+				sumc += c[i][j];
+				if (c[i][j] > maxc) {
+					maxc = c[i][j];
+					maxci = i + 1;
+				}
+				if (c[i][j] < minc) {
+					minc = c[i][j];
+					minci = i + 1;
+				}
+			}
+			cout << c[i][j] << " ";
+		}
+		cout << endl;
+	}
+	cout << "Продавец " << maxti << " получил максимальную выручку" << endl << "Продавец " << minti << " получил минимальную выручку" << endl;
+	cout << "Продавец " << maxci << " получил максимальные коммиссионные" << endl << "Продавец " << minci << " получил минимальные комиссионные" << endl;
+	cout << "Сумма выручки с товаров " << sumt << endl;
+	cout << "Сумма всех комиссионных " << sumc << endl;
+	cout << "Вся сумма " << sum << endl;
+}
+int main() {
+	setlocale(LC_ALL, "rus");
+	int key;
+	int num;
+	cout << "Введите номер дз: | 3 | 5 | 8 |" << endl;
+	cin >> key;
+	if (key == 3) {
+		cout << "Площадь какой фигуры необходимо посчитать? Треугольник - 1, Прямоугольник - 2, Круг - 3" << endl;
+		cin >> num;
+		if (num == 1) {
+			treug();
+		}
+		if (num == 2) {
+			pryam();
+		}
+		if (num == 3) {
+			krug();
+		}
+		else {
+			cout << "Неправильно набран номер фигуры. Повторите попытку." << endl;
+			return 0;
+		}
+	}
+	if (key == 5) {
+		sinus();
+		return 0;
+	}
+	if (key == 8) {
+		matrix();
+		return 0;
+	}
+	else {
+		cout << "Программа с таким номером не решена" << endl;
+	}
+}
