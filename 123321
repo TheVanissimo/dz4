@@ -26,7 +26,7 @@ void pryam() {
 		cout << "Площадь прямоугольника равна: " << a * b << endl;
 	}
 	else {
-		cout << "Прямоугольника не существует" << endl;
+		cout << "Прямоугольника не существует" << endl;	
 	}
 }
 void krug() {
@@ -131,12 +131,15 @@ int main() {
 		cin >> num;
 		if (num == 1) {
 			treug();
+			return 0;
 		}
 		if (num == 2) {
 			pryam();
+			return 0;
 		}
 		if (num == 3) {
 			krug();
+			return 0;
 		}
 		else {
 			cout << "Неправильно набран номер фигуры. Повторите попытку." << endl;
