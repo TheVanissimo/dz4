@@ -1,0 +1,285 @@
+#include <string>
+#include <iostream>
+#include <regex>
+#include <math.h>
+#include <iomanip>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+#include <list>
+using namespace std;
+
+string ar_rim(int number) {
+    if (number >= 1000) {
+        return "M" + ar_rim(number - 1000);
+    }
+    if (number >= 900) {
+        return "CM" + ar_rim(number - 900);
+    }
+    if (number >= 500) {
+        return "D" + ar_rim(number - 500);
+    }
+    if (number >= 400) {
+        return "CD" + ar_rim(number - 400);
+    }
+    if (number >= 100) {
+        return "C" + ar_rim(number - 100);
+    }
+    if (number >= 90) {
+        return "XC" + ar_rim(number - 90);
+    }
+    if (number >= 50) {
+        return "L" + ar_rim(number - 50);
+    }
+    if (number >= 40) {
+        return "XL" + ar_rim(number - 40);
+    }
+    if (number >= 10) {
+        return "X" + ar_rim(number - 10);
+    }
+    if (number >= 9) {
+        return "IX" + ar_rim(number - 9);
+    }
+    if (number >= 5) {
+        return "V" + ar_rim(number - 5);
+    }
+    if (number >= 4) {
+        return "IV" + ar_rim(number - 4);
+    }
+    if (number > 1) {
+        return "I" + ar_rim(number - 1);
+    }
+    if (number == 1) {
+        return "I";
+    }
+    if (number < 1) {
+        return "";
+    }
+};
+
+int perevodchik(char i) {
+    if (i == 'I') {
+        return 1;
+    }
+    if (i == 'V') {
+        return 5;
+    }
+    if (i == 'X') {
+        return 10;
+    }
+    if (i == 'L') {
+        return 50;
+    }
+    if (i == 'C') {
+        return 100;
+    }
+    if (i == 'D') {
+        return 500;
+    }
+    if (i == 'M') {
+        return 1000;
+    }
+};
+
+void rim()
+{
+    setlocale(LC_ALL, "Rus");
+
+    string r;
+    regex regular("([IVXLCDM])+");
+    cout << "Введите римское число: ";
+    cin >> r;
+    if (regex_match(r, regular)) {
+        int n, chislo, pr;
+        n = r.length();
+        chislo = 0;
+        pr = perevodchik(r[n]);
+        while (n != -1) {
+            if (perevodchik(r[n]) >= pr) {
+                chislo += perevodchik(r[n]);
+            }
+            else {
+                chislo -= perevodchik(r[n]);
+            };
+            pr = perevodchik(r[n]);
+            n = n - 1;
+
+        };
+
+        int ar;
+        string rim;
+        ar = chislo;
+        if ((ar > 1) && (ar < 4000)) {
+            rim = ar_rim(ar);
+            if (rim == r) {
+                cout << ar;
+            }
+            else {
+                cout << "Число введено неверно.";
+            };
+        }
+        else {
+            cout << "Число введено неверно.";
+        };
+    }
+    else {
+        cout << "Не является римским числом.";
+    }
+}
+string proverka(string s, int o) {
+    string d = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    int symbol = 0;
+    for (int i = 0; i < s.length(); i++) {
+        for (int j = 0; j <= d.length(); j++) {
+            if (s[i] == d[j]) {
+                symbol = j;
+                if ((symbol > o) || (symbol == o)) {
+                    return "False";
+                    break;
+                }
+            }
+        }
+    };
+    return "True";
+}
+
+int to_10(string s, int osnovanie) {
+    int n = s.length() - 1;
+    int otvet = 0;
+    for (int i = 0; i < s.length(); i++) {
+        int symbol = 0;
+        string d = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (int j = 0; j <= d.length(); j++) {
+            if (s[n] == d[j]) {
+                symbol = j;
+            }
+        }
+        otvet += symbol * pow(osnovanie, i);
+        n -= 1;
+    };
+    return otvet;
+
+}
+
+string to_system(int k, int new_osn) {
+    string l = "";
+    int ostatok = 0;
+    string d = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    while (k != 0) {
+        ostatok = k % new_osn;
+        l = d[ostatok] + l;
+        k = k / new_osn;
+    }
+    return l;
+}
+
+void sschisl()
+{
+    setlocale(LC_ALL, "Rus");
+    string chislo, chislo1, new_chislo;
+    int s_1, s_2;
+    cout << "Введите число ";
+    cin >> chislo1;
+    regex r("([-])?"
+        "([0-9A-Z])*");
+    if (regex_match(chislo1, r)) {
+
+        //Проверка, является ли число отрицательным
+        char ch = '-';
+        string does_it_have_a_minus = "False";
+        if (chislo1[0] == ch) {
+            for (int i = 1; i < chislo1.length(); i++) {
+                chislo += chislo1[i];
+            };
+            does_it_have_a_minus = "True";
+        }
+        else {
+            does_it_have_a_minus = "False";
+            chislo = chislo1;
+        };
+
+        cout << "В какой системе счисления представлено это число: ";
+        cin >> s_1;
+        regex regularic("([0-9])*");
+        if ((regex_match(to_string(s_1), regularic)) && (s_1 < 38) && (s_1 > 1)) {
+
+            if (proverka(chislo, s_1) == "True") {
+                cout << "В какую систему счисления хотите перевести: ";
+                cin >> s_2;
+                regex regular("([0-9])*");
+                if ((regex_match(to_string(s_2), regular)) && (s_2 < 38) && (s_2 > 1)) {
+                    new_chislo = to_system(to_10(chislo, s_1), s_2);
+                    cout << "Полученное число: ";
+                    if (does_it_have_a_minus == "True") {
+                        new_chislo = ch + new_chislo;
+                    };
+                    cout << new_chislo << endl;
+                }
+                else {
+                    cout << "Такого основания не существует";
+                }
+
+            }
+            else {
+                cout << "Такого числа нет в данной системе счисления";
+            }
+        }
+        else {
+            cout << "Такого основания не существует";
+        }
+    }
+    else {
+        cout << "Программа принимает на вход только целые числа и числа, которые содержат заглавные английские буквы";
+    }
+}
+void resheto(int a) {
+    bool* arr = new bool[a];
+    for (int i = 0; i < a; i++) {
+        if (i > 1) {
+            arr[i] = true;
+        }
+    }
+    for (int i = 2; i < a; i++) {
+        if (i) {
+            for (int j = i + 1; j < a; j++) {
+                if (j % i == 0) {
+                    arr[j] = false;
+                }
+            }
+        }
+    }
+    for (int i = 0; i < a; i++) {
+        if (arr[i]) {
+            cout << i << endl;
+        }
+    }
+}
+void dz2() {
+    int a;
+    cout << "введите число: ";
+    cin >> a;
+    cout << "Список простых чисел: "<< endl;
+    resheto(a + 1);
+}
+int main() {
+    setlocale(LC_ALL, "rus");
+    int key;
+    int num;
+    cout << "Введите номер дз[4]( Доступно: [ 6 ][ 9 ]) или дз[5] (Доступно: [2])" << endl;
+    cin >> key;
+    if (key == 6) {
+        rim();
+        return 0;
+    }
+    if (key == 9) {
+        sschisl();
+        return 0;
+    }
+    if (key == 2) {
+        dz2();
+        return 0;
+    }
+    else {
+        cout << "ДЗ с таким номером не решена" << endl;
+    }
+}
