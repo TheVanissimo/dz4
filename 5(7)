@@ -1,0 +1,83 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+int main() {
+    double c;
+    setlocale(LC_ALL, "Rus");
+    ofstream f1("Phone.txt");
+    string s;
+    cout << "Сколько номеров нужно записать?" << endl;
+    cin >> c;
+    if ((c = int(c))&&(c>=1)) {
+        cout << "Телефонная книжка создана. Запишите фамилии и номера контактов.\nКол-во слотов: [" << c << "]" << endl;
+    }
+    else {
+        cout << "Кол-во номеров не является целым числом." << endl;
+        return 0;
+    }
+    for (int i = 0; i<c; i++){
+        cout << "Введите Фамилию: ";   // Массив
+        cin >> s;
+        f1 << s << " ";
+        cout << "Введите Номер: ";
+        cin >> s;
+        f1 << s << endl;
+    }
+    f1.close();     //Закрыть файл
+    ifstream f2("phone.txt");    //файл для чтения
+    string h;
+    if (c > 0) {
+        cout << "Кого найти?-  ";
+        cin >> s;
+        for (f2 >> h; !f2.eof(); f2 >> h)   //Пока не прогоним всю строчку по всему файлу
+            if (s == h)   //Если есть совпадение
+            {
+                cout << h << " ";
+                f2 >> h;
+                cout << h << " Был найден" << endl;
+            }
+        
+    }
+    ifstream f3("phone.txt");   //Файл для чтения
+    string d[500];          //Сортировка
+    int i = 0;
+    while (!f3.eof())
+    {
+        getline(f3, h);
+        d[i] = h;
+        i++;
+    }
+    for (int i = 0; i < c; i++)
+        for (int j = i; j < c; j++)
+        {
+            if (d[i] > d[j])
+                swap(d[i], d[j]);
+        }
+    ofstream f4("phone2.txt");
+    for (int i = 0; i < c; i++)
+        f4 << d[i] << endl;
+    f3.close();
+    f4.close();
+    
+    ifstream fin; // вывод на экран
+    fin.open("phone2.txt");
+    if (!fin.is_open()) {
+        cout << "Ошибка открытия файла!" << endl;
+    }
+    else
+    {
+        cout << "Файл открыт" << endl;
+        string str;
+        while (!fin.eof())
+        {
+            str = "";
+            getline(fin, str);
+            cout << str << endl;
+        }
+    }
+    fin.close();
+
+    return 0;
+}
