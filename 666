@@ -1,0 +1,194 @@
+#include <iostream>;
+
+using namespace std;
+
+void base2() {
+// Единицы длины пронумерованы следующим образом: 1 — дециметр, 2 — километр, 3 —
+//метр, 4 — миллиметр, 5 — сантиметр.Дан номер единицы длины и длина отрезка L в этих
+//единицах(вещественное число).Вывести длину данного отрезка в метрах.
+	int key;
+	int count;
+	setlocale(LC_ALL, "rus");
+	cout << "[1] - Отрезок задан в дециметрах\n[2] - Отрезок задан в километрах\n[3] - Отрезок задан в метрах\n[4] - Отрезок задан в миллиметрах\n[5] - Отрезок задан в сантиметрах" << endl;
+	cout << "Введите номер единицы измерения (1-5)" << endl;
+	cin >> key;
+	if ((key > 5) || (key < 1)) {
+		cout << "Номер единицы измерения задан неверно." << endl;
+	}
+	if (key == 1) {
+		cout << "Введите длину отрезка в дециметрах: " << endl;
+		cin >> count;
+		cout << "Отрезок в метрах равен - " << (count * 0.1) << " м." << endl;
+	}
+	if (key == 2) {
+		cout << "Введите длину отрезка в километрах: " << endl;
+		cin >> count;
+		cout << "Отрезок в метрах равен - " << (count * 1000) << " м." << endl;
+	}
+	if (key == 3) {
+		cout << "Введите длину отрезка в метрах: " << endl;
+		cin >> count;
+		cout << "Отрезок в метрах равен - " << count << " м." << endl;
+	}
+	if (key == 4) {
+		cout << "Введите длину отрезка в миллиметрах: " << endl;
+		cin >> count;
+		cout << "Отрезок в метрах равен - " << (count * 0.001) << " м." << endl;
+	}
+	if (key == 5) {
+		cout << "Введите длину отрезка в сантиметрах: " << endl;
+		cin >> count;
+		cout << "Отрезок в метрах равен - " << (count * 0.01) << " м." << endl;
+	}
+}
+int get_a() {
+	while (true)
+	{
+		unsigned int a;
+		cin >> a;
+
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(32767, '\n');
+			cout << "Упс, введено неправильное значение. Попробуйте еще раз.\n";
+		}
+		else if (a == 0) {
+			cin.clear();
+			cin.ignore(32767, '\n');
+			cout << "Упс, введено неправильное значение. Попробуйте еще раз.\n";
+		}
+		else
+		{
+			//cin.ignore(32767, '\n');
+			return a;
+		}
+	}
+	return 0;
+}
+void base3() {
+//Даны: натуральные n и a1, a2, a3, …, an.Написать алгоритм вычисления
+//последовательности :
+//a1, a1 + a2, …, a1 + a2 + a3 + … + an.
+	unsigned int n = 0;
+	while (n == 0) {
+		cout << "Введите количество членов последовательности: " << endl;
+		n = get_a();
+	}
+	cout << "Введите значения членов последовательности: " << endl;
+	unsigned int* arr = new unsigned int[n];
+	for (int i = 0; i < n; i++) {
+		arr[i] = 0;
+		arr[i] = get_a();
+	}
+	unsigned int* result = new unsigned int[n];
+	for (int i = 0; i < n; i++) {
+		result[i] = 0;
+	}
+	result[0] = arr[0];
+	for (int i = 1; i < n; i++) {
+		result[i] = result[i - 1] + arr[i];
+	}
+	for (int i = 0; i < n; i++) {
+		cout << result[i] << " ";
+	}
+}
+void base4() {
+// Дана точка A и множество B из N точек.Найти номер точки из множества B, наиболее
+// близкой к А.
+	int a;
+	cout << "введите точку A: ";
+	cin >> a;
+	int n;
+	cout << "введите число n - размер множества точек B: ";
+	cin >> n;
+	int* b = new int[n];
+	cout << "введите через пробел n точек: ";
+	for (int i = 0; i < n; i++) {
+		cin >> b[i];
+	}
+	int ans = 0;
+	int mn_razn = 10000000000;
+	for (int i = 0; i < n; i++) {
+		if (abs(a - b[i]) < mn_razn) {
+			mn_razn = abs(a - b[i]);
+			ans = b[i];
+		}
+	}
+	cout << "самая близкая точка из множества B к точке A: " << ans << endl;
+}
+int f0(int a, int b) {
+	return a + b;
+}
+int f1(int a, int b) {
+	return a - b;
+}
+int f2(int a, int b) {
+	return a * b;
+}
+int f3(int a, int b) {
+	return a / b;
+}
+void base5(){
+//В написанном выражении((((1 ? 2) ? 3) ? 4) ? 5) ? 6 вместо каждого знака "?" вставить знак
+//одного из четырёх арифметических действий : +, -, *, / -так, чтобы результат вычислений
+//равнялся 35 (при делении дробная часть в частном отбрасывается).
+	string operations = "+-*/";
+	string str = "((((1?2)?3)?4)?5)?6=35";
+	int (*f[])(int a, int b) = { f0,f1,f2,f3 }; // указатель значения f на адреса (f0, f1, f2, f3)
+	for (int i = 0; i < 4; i++)
+	{
+		int a = f[i](1, 2);
+		str[5] = operations[i];
+		for (int j = 0; j < 4; j++)
+		{
+			int b = f[j](a, 3);
+			str[8] = operations[j];
+			for (int k = 0; k < 4; k++)
+			{
+				int c = f[k](b, 4);
+				str[11] = operations[k];
+				for (int l = 0; l < 4; l++)
+				{
+					int d = f[l](c, 5);
+					str[14] = operations[l];
+					for (int m = 0; m < 4; m++)
+						if (f[m](d, 6) == 35)
+						{
+							str[17] = operations[m];
+							cout << str << endl;
+						}
+				}
+			}
+		}
+	}
+	system("pause");
+}
+int main() {
+	setlocale(LC_ALL, "rus");
+	int key;
+	int num;
+	cout << "-----------------------------------------------------" << endl;
+	cout << "Введите номер дз[6]( Доступно: [ 2 ][ 3 ][ 4 ][ 5 ]) " << endl;
+	cout << "-----------------------------------------------------" << endl;
+	cin >> key;
+	if (key == 2) {
+		base2();
+		return 0;
+	}
+	if (key == 3) {
+		base3();
+		return 0;
+	}
+	if (key == 4) {
+		base4();
+		return 0;
+	}
+	if (key == 5) {
+		base5();
+		return 0;
+	}
+	else {
+		cout << "ДЗ с таким номером не решена" << endl;
+	}
+}
