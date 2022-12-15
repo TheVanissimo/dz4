@@ -1,0 +1,289 @@
+#include <iostream>
+#include <ctime>
+#include <iomanip>
+#include <windows.h>
+#include <conio.h>
+#include <stdio.h>
+#include <cctype>
+using namespace std;
+HANDLE hConsole1;
+
+
+void Shuffle(bool baCardsDealt[]);
+void PrintCard(int iCard);
+void PrintHand(int iaHand[], const int kiCardCount);
+int GetNextCard(bool baCardsDealt[]);
+int ScoreHand(int iaHand[], const int kiCardCount);
+void PrintScoresAndHands(int iaHouseHand[], const int kiHouseCardCount, int iaPlayerHand[], const int kiPlayerCardCount);
+
+int main() {
+	hConsole1 = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole1, 15);
+
+	setlocale(LC_ALL, "Rus");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(65001);
+
+	time_t qTime; // Рандом-генератор с помощью time
+	time(&qTime);
+	srand(qTime);
+	bool baCardsDealt[52]; // Массив для отслеживания карт(колода)
+	int DealerCardCount = 0; // Кол-во карт диллера
+	int iaHouseHand[12]; // Рука диллера	
+	int iPlayerCardCount = 0; // Кол-во карт игрока
+	int iaPlayerHand[12]; // Рука игрока
+	double balance;
+	double stavka;
+	int mm;
+	balance = 1000;
+	mm = 100;
+	stavka = 999;
+
+	while (true) {
+		while (mm != 0) {
+			cout << "У Вас на руках: " << balance;
+			SetConsoleTextAttribute(hConsole1, 2);
+			cout << "$\n";
+			SetConsoleTextAttribute(hConsole1, 15);
+			cout << "\nВведите ставку: " << endl;
+			cin >> stavka;
+
+			if (cin.fail())
+			{
+				cin.clear();
+				cin.ignore(32767, '\n');
+				cout << "Ошибка ввода. Попробуйте еще раз.\n";
+			}
+			else if (stavka == 0) {
+				cin.clear();
+				cin.ignore(32767, '\n');
+				cout << "Нельзя играть без ставки.\n";
+			}
+			else if (stavka > balance) {
+				cin.clear();
+				cin.ignore(32767, '\n');
+				cout << "У Вас нет столько денег.\n";
+			}
+			else {
+				cout << "Ставка принята.\n";
+				stavka = int(stavka);
+				mm = 0;
+			}
+		}
+		Shuffle(baCardsDealt); //ТАСОВКА КАРТ - false, чтобы указать что карты не были разданы
+		iaPlayerHand[0] = GetNextCard(baCardsDealt); // РАЗДАЧА КАЖДОМУ ПО ДВЕ (163-173) + цикл для поиска карты, которая еще не была сдана
+		iaHouseHand[0] = GetNextCard(baCardsDealt);
+		iaPlayerHand[1] = GetNextCard(baCardsDealt);
+		iaHouseHand[1] = GetNextCard(baCardsDealt);
+		DealerCardCount = 2;
+		iPlayerCardCount = 2;
+
+		// Signal a new hand.
+		cout << "--------------------------------------------------------" << endl;
+		cout << "-----------------------РАЗДАЧА--------------------------" << endl;
+		cout << "--------------------------------------------------------" << endl;
+		char cPlayerChoice;
+		bool bPlayerHits = true;
+		int iPlayerScore = ScoreHand(iaPlayerHand, iPlayerCardCount); // Подсчет очков 175-195.Функция просматривает карты в раздаче и добавляет очки.
+		do {
+			cout << "Карты диллера:" << endl;
+			SetConsoleTextAttribute(hConsole1, 14);
+			cout << " ________\n|?       |\n|********|\n|********|\n|********|\n|********|\n|********|\n|________|\n";
+			SetConsoleTextAttribute(hConsole1, 15);
+			PrintCard(iaHouseHand[1]);
+			cout << endl;
+			cout << "Карты игрока: Очки = " << ScoreHand(iaPlayerHand, iPlayerCardCount) << endl;
+			PrintHand(iaPlayerHand, iPlayerCardCount);
+
+			// Выбор игрока: 
+			cout << "Еще(h) или оставить(s)? ";
+			cin >> cPlayerChoice;
+			if (cPlayerChoice == 'h') { //ветви
+				iaPlayerHand[iPlayerCardCount] = GetNextCard(baCardsDealt);
+				++iPlayerCardCount;
+			}
+			else if (cPlayerChoice == 's') {
+				bPlayerHits = false;
+			}
+			else {
+				cout << "Ошибка. Попробуйте снова." << endl;
+			}
+			cout << endl;
+			// Выбор карт/Подсчет очков:  
+			iPlayerScore = ScoreHand(iaPlayerHand, iPlayerCardCount);
+		} while (bPlayerHits && iPlayerScore < 21);
+
+		if ((iPlayerScore > 21) || (iPlayerScore == 21)) {
+			if (iPlayerScore > 21) {
+				PrintScoresAndHands(iaHouseHand, DealerCardCount, iaPlayerHand, iPlayerCardCount);
+				cout << "**** ВЫИГРАЛ ДИЛЛЕР **** " << endl;
+				balance = balance - stavka;
+				cout << " " << endl;
+			}
+			if (iPlayerScore == 21) {
+				PrintScoresAndHands(iaHouseHand, DealerCardCount, iaPlayerHand, iPlayerCardCount);
+				cout << "**** БЛЭКДЖЕК! ВЫИГРАЛ ИГРОК!!! **** " << endl;
+				balance = balance + stavka;
+				cout << " " << endl;
+			}
+		}
+		else {
+			int iHouseScore = ScoreHand(iaHouseHand, DealerCardCount);
+			while (iHouseScore < 17) {
+				iaHouseHand[DealerCardCount] = GetNextCard(baCardsDealt);
+				++DealerCardCount;
+				iHouseScore = ScoreHand(iaHouseHand, DealerCardCount);
+			}
+			bool bHouseBusts = (iHouseScore > 21);
+			if (bHouseBusts) {
+				PrintScoresAndHands(iaHouseHand, DealerCardCount, iaPlayerHand, iPlayerCardCount);
+				cout << "**** ВЫИГРАЛ ИГРОК!!! ****" << endl;
+				balance = balance + stavka;
+				cout << " " << endl;
+			}
+			else {
+				if (iPlayerScore == iHouseScore) {
+					PrintScoresAndHands(iaHouseHand, DealerCardCount, iaPlayerHand, iPlayerCardCount);
+					cout << "**** НИЧЬЯ ****" << endl;
+					cout << " " << endl;
+				}
+				else if (iPlayerScore > iHouseScore) {
+					PrintScoresAndHands(iaHouseHand, DealerCardCount, iaPlayerHand, iPlayerCardCount);
+					cout << "**** ВЫИГРАЛ ИГРОК!!! ****" << endl;
+					balance = balance + stavka;
+					cout << " " << endl;
+				}
+				else {
+					PrintScoresAndHands(iaHouseHand, DealerCardCount, iaPlayerHand, iPlayerCardCount);
+					cout << "**** ВЫИГРАЛ ДИЛЛЕР **** " << endl;
+					balance = balance - stavka;
+					cout << " " << endl;
+				}
+			}
+		}
+		char NextGame;
+		if (balance == 0) {
+			SetConsoleTextAttribute(hConsole1, 4);
+			cout << "У Вас закончились деньги. Вы были с позором выгнаны из казино." << endl;
+			SetConsoleTextAttribute(hConsole1, 15);
+			return 0;
+		}
+		cout << "Сыграем еще?(0 - нет.)";
+		cin >> NextGame;
+		if (NextGame == '0') {
+			cout << "\nВы покинули игру и унесли с собой " << balance;
+			SetConsoleTextAttribute(hConsole1, 10);
+			cout << "$." << endl;
+			SetConsoleTextAttribute(hConsole1, 15);
+			return 0;
+		}
+		else {
+			mm = 1000;
+		}
+	}
+}
+void Shuffle(bool baCardsDealt[]) {
+	for (int iIndex = 0; iIndex < 52; ++iIndex) {
+		baCardsDealt[iIndex] = false;
+	}
+}
+
+void PrintCard(int iCard) {
+	HANDLE hConsole;
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	char m;
+	using namespace std;
+	// Ранг
+	const int kiRank = (iCard % 13);
+	if (kiRank == 0) {
+		m = 'A';
+	}
+	else if (kiRank < 9) {
+		m = (char)(((int)'0') + (kiRank + 1));
+	}
+	else if (kiRank == 9) {
+		m = 'T';
+	}
+	else if (kiRank == 10) {
+		m = 'J';
+	}
+	else if (kiRank == 11) {
+		m = 'Q';
+	}
+	else {
+		m = 'K';
+	}
+	// Масть 
+	const int kiSuit = (iCard / 13);
+	if (kiSuit == 0) {
+		cout << " ________\n|" << m << "  __   |\n| _/  \\_ |\n||_    _||\n|  \\  /  |\n|  /  \\  |\n|  \\__/  |\n|________|\n"; // КРЕСТИ 
+	}
+	else if (kiSuit == 1) {
+		SetConsoleTextAttribute(hConsole, 4);
+		cout << " ________\n|" << m << "  /\\   |\n|  /  \\  |\n| /    \\ |\n| \\    / |\n|  \\  /  |\n|   \\/   |\n|________|\n"; // БУБИ
+		SetConsoleTextAttribute(hConsole, 15);
+	}
+	else if (kiSuit == 2) {
+		SetConsoleTextAttribute(hConsole, 4);
+		cout << " ________\n|" << m << "       |\n|  _  _  |\n| / \\/ \\ |\n| \\    / |\n|  \\  /  |\n|   \\/   |\n|________|\n"; // ЧЕРВИ
+		SetConsoleTextAttribute(hConsole, 15);
+	}
+	else {
+		cout << " ________\n|" << m << "       |\n|   /\\   |\n|  /  \\  |\n| /    \\ |\n| \\_  _/ |\n|   \\/   |\n|________|\n"; // ПИКИ
+	}
+}
+
+void PrintHand(int iaHand[], const int kiCardCount) {
+	using namespace std;
+	for (int iCardIndex = 0; iCardIndex < kiCardCount; ++iCardIndex) {
+		const int kiNextCard = iaHand[iCardIndex];
+		PrintCard(kiNextCard);
+	}
+	cout << endl;
+}
+
+int GetNextCard(bool baCardsDealt[]) {
+	bool bCardDealt = true;
+	int iNewCard = -1;
+	do {
+		iNewCard = (rand() % 52);
+		if (!baCardsDealt[iNewCard]) {
+			bCardDealt = false;
+		}
+	} while (bCardDealt);
+	return iNewCard;
+}
+
+int ScoreHand(int iaHand[], const int kiCardCount) {
+	int iAceCount = 0;
+	int iScore = 0;
+	for (int iCardIndex = 0; iCardIndex < kiCardCount; ++iCardIndex) {
+		const int kiNextCard = iaHand[iCardIndex];
+		const int kiRank = (kiNextCard % 13);
+		if (kiRank == 0) {
+			++iAceCount;
+			++iScore;
+		}
+		else if (kiRank < 9) {
+			iScore = iScore + (kiRank + 1);
+		}
+		else {
+			iScore = iScore + 10;
+		}
+	}
+	while (iAceCount > 0 && iScore < 12) {
+		--iAceCount;
+		iScore = iScore + 10;
+	}
+	return iScore;
+}
+
+void PrintScoresAndHands(int iaHouseHand[], const int kiHouseCardCount, int iaPlayerHand[], const int kiPlayerCardCount) {
+	using namespace std;
+	PrintHand(iaHouseHand, kiHouseCardCount);
+	cout << "Карты диллера: Очки = " << ScoreHand(iaHouseHand, kiHouseCardCount) << endl;
+	cout << " " << endl;
+	PrintHand(iaPlayerHand, kiPlayerCardCount);
+	cout << "Карты игрока:  Очки = " << ScoreHand(iaPlayerHand, kiPlayerCardCount) << endl;
+	cout << " " << endl;
+}
