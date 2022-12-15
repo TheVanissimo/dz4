@@ -108,10 +108,15 @@ int main() {
 					cin.ignore(32767, '\n');
 					cout << "Ошибка ввода. Попробуйте еще раз.\n";
 				}
-				if ((cPlayerChoice == 'h') || (cPlayerChoice == 's')){
+				if ((cPlayerChoice == 'h') || (cPlayerChoice == 's')) {
 					cin.clear();
 					cin.ignore(10000, '\n');
 					vv = 0;
+				}
+				else {
+					cin.clear();
+					cin.ignore(10000, '\n');
+					cout << "Ошибка ввода. Попробуйте еще раз.\n";
 				}
 			}
 			if (cPlayerChoice == 'h') { //ветви
